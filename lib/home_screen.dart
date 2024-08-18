@@ -2,9 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:soul_mate/CHAT/chat_screen.dart';
 import 'package:soul_mate/custom_bottom_navbar.dart';
 import 'package:soul_mate/notifications_page.dart';
-import 'package:soul_mate/profile_screen.dart';
+import 'package:soul_mate/PROFILE/profile_screen.dart';
 
 class HomeScreen extends StatefulWidget {
+  const HomeScreen({super.key});
+
   @override
   _HomeScreenState createState() => _HomeScreenState();
 }
@@ -27,10 +29,9 @@ class _HomeScreenState extends State<HomeScreen> {
       case 0:
         Navigator.pushReplacement(
           context,
-          MaterialPageRoute(builder: (context) => HomeScreen()),
+          MaterialPageRoute(builder: (context) => const HomeScreen()),
         );
         break;
-      // Add more cases as needed
       case 3:
         Navigator.pushReplacement(
           context,
@@ -40,7 +41,7 @@ class _HomeScreenState extends State<HomeScreen> {
       case 4:
         Navigator.pushReplacement(
           context,
-          MaterialPageRoute(builder: (context) => ProfileScreen()),
+          MaterialPageRoute(builder: (context) => const ProfileScreen()),
         );
         break;
     }
@@ -50,22 +51,34 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Soul Mate'),
+        leading: IconButton(
+          icon: const Icon(Icons.person, color: Colors.white),
+          onPressed: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => const ProfileScreen()),
+            );
+          },
+        ), // Replace leading with the profile icon
+        title: const Center(
+          child: Text(
+            'Soul Mate',
+            style: TextStyle(
+              fontSize: 20,
+              fontWeight: FontWeight.bold,
+              color: Colors.white,
+            ),
+          ),
+        ),
         backgroundColor: Colors.red,
         actions: [
           IconButton(
-            icon: const Icon(Icons.notifications),
+            icon: const Icon(Icons.notifications, color: Colors.white),
             onPressed: () {
               Navigator.push(
                 context,
                 MaterialPageRoute(builder: (context) => NotificationsPage()),
               );
-            },
-          ),
-          IconButton(
-            icon: const Icon(Icons.person),
-            onPressed: () {
-              // Handle profile navigation
             },
           ),
         ],

@@ -23,6 +23,8 @@ class InboxScreen extends StatelessWidget {
     // Add more messages here
   ];
 
+  InboxScreen({super.key});
+
   void _showMessageDetail(BuildContext context, Message message) {
     Navigator.push(
       context,

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:soul_mate/CHAT/chat_screen.dart';
 import 'package:soul_mate/home_screen.dart';
-import 'package:soul_mate/profile_screen.dart';
+import 'package:soul_mate/PROFILE/profile_screen.dart';
 
 class BottomNavBar extends StatelessWidget {
   final int selectedIndex;
