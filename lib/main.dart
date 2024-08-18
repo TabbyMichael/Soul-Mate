@@ -3,9 +3,9 @@ import 'package:soul_mate/AUTH/login_page.dart';
 import 'package:soul_mate/splash_screen.dart';
 import 'onboarding_screen.dart';
 import 'AUTH/signup_screen.dart';
-import 'profile_setup_screen.dart';
+import 'PROFILE/edit_profile_screen.dart';
 import 'home_screen.dart';
-import 'profile_screen.dart';
+import 'PROFILE/profile_screen.dart';
 import 'search_screen.dart';
 import 'CHAT/chat_screen.dart';
 import 'settings_screen.dart';
@@ -27,16 +27,16 @@ class MyApp extends StatelessWidget {
       ),
       initialRoute: '/splash',
       routes: {
-        '/splash': (context) => SplashScreen(),
-        '/OnboardingScreen': (context) => OnboardingScreen(),
+        '/splash': (context) => const SplashScreen(),
+        '/OnboardingScreen': (context) => const OnboardingScreen(),
         '/signup': (context) => const SignUpPage(),
         '/login': (context) => const LoginPage(),
-        '/profile-setup': (context) => ProfileSetupScreen(),
         '/home': (context) => HomeScreen(),
-        '/profile': (context) => ProfileScreen(),
-        '/search': (context) => SearchScreen(),
+        '/profile': (context) => const ProfileScreen(),
+        '/edit-profile': (context) => const EditProfileScreen(),
+        '/search': (context) => const SearchScreen(),
         '/chat': (context) => InboxScreen(),
-        '/settings': (context) => SettingsScreen(),
+        '/settings': (context) => const SettingsScreen(),
       },
     );
   }
