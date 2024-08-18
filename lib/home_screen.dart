@@ -1,13 +1,57 @@
 import 'package:flutter/material.dart';
-import 'package:soul_mate/notifications_page.dart'; // Ensure you have the provider package imported
+import 'package:soul_mate/CHAT/chat_screen.dart';
+import 'package:soul_mate/custom_bottom_navbar.dart';
+import 'package:soul_mate/notifications_page.dart';
+import 'package:soul_mate/profile_screen.dart';
 
-class HomeScreen extends StatelessWidget {
+class HomeScreen extends StatefulWidget {
+  @override
+  _HomeScreenState createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen> {
+  int _selectedIndex = 0;
+
+  void _onNavBarItemTapped(int index) {
+    setState(() {
+      _selectedIndex = index;
+    });
+  }
+
+  void _onAddButtonPressed() {
+    // Handle add button press
+  }
+
+  void _navigateToPage(int index) {
+    switch (index) {
+      case 0:
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => HomeScreen()),
+        );
+        break;
+      // Add more cases as needed
+      case 3:
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => InboxScreen()),
+        );
+        break;
+      case 4:
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => ProfileScreen()),
+        );
+        break;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Soul Mate'),
-        backgroundColor: Colors.red, // AppBar background color
+        backgroundColor: Colors.red,
         actions: [
           IconButton(
             icon: const Icon(Icons.notifications),
@@ -29,7 +73,6 @@ class HomeScreen extends StatelessWidget {
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Welcome Section
           Padding(
             padding: const EdgeInsets.all(16.0),
             child: Text(
@@ -37,90 +80,52 @@ class HomeScreen extends StatelessWidget {
               style: Theme.of(context).textTheme.bodyLarge,
             ),
           ),
-          // Matches Carousel filling the rest of the screen
           Expanded(
             child: PageView.builder(
-              itemCount: 4, // Number of items in the carousel
+              itemCount: 4,
               itemBuilder: (context, index) {
                 return _buildMatchCard(
-                  context: context, // Pass context here
+                  context: context,
                   title: 'Featured Match ${index + 1}',
                   subtitle: 'Brief info for match ${index + 1}',
-                  imageAsset:
-                      'assets/images/match${index + 1}.jpg', // Sample image asset
-                  isUserInFocus: index == 0, // Example condition for focus
+                  imageAsset: 'assets/images/match${index + 1}.jpg',
+                  isUserInFocus: index == 0,
                 );
               },
-              controller: PageController(
-                viewportFraction:
-                    0.8, // This determines the visible width of the cards
-              ),
+              controller: PageController(viewportFraction: 0.8),
             ),
           ),
         ],
       ),
-      bottomNavigationBar: BottomNavigationBar(
-        items: const [
-          BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
-          BottomNavigationBarItem(icon: Icon(Icons.search), label: 'Explore'),
-          BottomNavigationBarItem(icon: Icon(Icons.message), label: 'Messages'),
-          BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Profile'),
-        ],
-        selectedItemColor: Colors.red, // Highlight selected item
-        unselectedItemColor: Colors.grey, // Color for unselected items
-      ),
-      bottomSheet: Container(
-        color: Colors.white, // Background color for the icons area
-        padding: const EdgeInsets.all(16.0),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceAround,
-          children: [
-            IconButton(
-              icon: const Icon(Icons.close, color: Colors.red, size: 30),
-              onPressed: () {
-                // Handle Dislike action
-              },
-            ),
-            IconButton(
-              icon: const Icon(Icons.favorite, color: Colors.pink, size: 30),
-              onPressed: () {
-                // Handle Love action
-              },
-            ),
-            IconButton(
-              icon: const Icon(Icons.star, color: Colors.yellow, size: 30),
-              onPressed: () {
-                // Handle Favorite action
-              },
-            ),
-          ],
-        ),
+      bottomNavigationBar: BottomNavBar(
+        selectedIndex: _selectedIndex,
+        onItemTapped: (index) {
+          _onNavBarItemTapped(index);
+          _navigateToPage(index);
+        },
+        onAddButtonPressed: _onAddButtonPressed,
       ),
     );
   }
 
-  // Widget to build match cards with customizable width and height
   Widget _buildMatchCard({
-    required BuildContext context, // Add context here
+    required BuildContext context,
     required String title,
     required String subtitle,
     required String imageAsset,
-    required bool
-        isUserInFocus, // Determine if the user is in focus for badge display
+    required bool isUserInFocus,
   }) {
-    final size = MediaQuery.of(context).size; // Use context here
+    final size = MediaQuery.of(context).size;
 
     return Container(
-      height: size.height * 0.7, // Similar to UserCardWidget
-      width: size.width *
-          0.9, // Adjust width to be slightly smaller than full width
-      margin: const EdgeInsets.symmetric(
-          horizontal: 8.0), // Add horizontal margins for visibility
+      height: size.height * 0.7,
+      width: size.width * 0.9,
+      margin: const EdgeInsets.symmetric(horizontal: 8.0),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(10),
         image: DecorationImage(
           image: AssetImage(imageAsset),
-          fit: BoxFit.cover, // Fit image to cover the container
+          fit: BoxFit.cover,
         ),
       ),
       child: Container(
@@ -193,7 +198,7 @@ class HomeScreen extends StatelessWidget {
       top: 20,
       right: 20,
       child: Transform.rotate(
-        angle: -0.5, // Adjust angle for styling
+        angle: -0.5,
         child: Container(
           padding: const EdgeInsets.all(8.0),
           decoration: BoxDecoration(

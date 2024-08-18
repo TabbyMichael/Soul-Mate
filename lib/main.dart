@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:soul_mate/login_page.dart';
+import 'package:soul_mate/AUTH/login_page.dart';
 import 'package:soul_mate/splash_screen.dart';
 import 'onboarding_screen.dart';
-import 'signup_screen.dart';
+import 'AUTH/signup_screen.dart';
 import 'profile_setup_screen.dart';
 import 'home_screen.dart';
 import 'profile_screen.dart';
 import 'search_screen.dart';
-import 'chat_screen.dart';
+import 'CHAT/chat_screen.dart';
 import 'settings_screen.dart';
 
 void main() {
@@ -29,13 +29,13 @@ class MyApp extends StatelessWidget {
       routes: {
         '/splash': (context) => SplashScreen(),
         '/OnboardingScreen': (context) => OnboardingScreen(),
-        '/signup': (context) => SignUpPage(),
-        '/login': (context) => LoginPage(),
+        '/signup': (context) => const SignUpPage(),
+        '/login': (context) => const LoginPage(),
         '/profile-setup': (context) => ProfileSetupScreen(),
         '/home': (context) => HomeScreen(),
         '/profile': (context) => ProfileScreen(),
         '/search': (context) => SearchScreen(),
-        '/chat': (context) => ChatScreen(),
+        '/chat': (context) => InboxScreen(),
         '/settings': (context) => SettingsScreen(),
       },
     );
