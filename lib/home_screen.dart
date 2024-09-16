@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:soul_mate/CHAT/chat_screen.dart';
+import 'package:soul_mate/API/random_api.dart'; // Ensure this is implemented correctly
+import 'package:soul_mate/PROFILE/profile_screen.dart';
 import 'package:soul_mate/custom_bottom_navbar.dart';
 import 'package:soul_mate/notifications_page.dart';
-import 'package:soul_mate/PROFILE/profile_screen.dart';
+import 'package:tcard/tcard.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -12,18 +14,61 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+  final TCardController _controller = TCardController();
+  List<Map<String, dynamic>> _matches = [];
+  bool _isLoading = true;
+  bool _hasError = false;
   int _selectedIndex = 0;
 
+  @override
+  void initState() {
+    super.initState();
+    _fetchProfiles();
+  }
+
+  // Fetch profiles using the RandomUserService
+  Future<void> _fetchProfiles() async {
+    setState(() {
+      _isLoading = true;
+      _hasError = false;
+    });
+
+    final apiService = RandomUserService();
+    try {
+      // Fetch random users with a count of 100
+      final profiles = await apiService.fetchRandomUsers(count: 100);
+
+      setState(() {
+        _matches = profiles.map((profile) {
+          final firstName = profile['name']?['first'] ?? 'Unknown';
+          final lastName = profile['name']?['last'] ?? 'User';
+          final imageUrl = profile['picture']?['large'] ??
+              'https://via.placeholder.com/150'; // Fallback image if picture is null
+
+          return {
+            'name': '$firstName $lastName',
+            'image': imageUrl,
+          };
+        }).toList();
+        _isLoading = false;
+      });
+    } catch (e) {
+      print('Error fetching profiles: $e');
+      setState(() {
+        _hasError = true;
+        _isLoading = false;
+      });
+    }
+  }
+
+  // Handle navigation bar item tapped
   void _onNavBarItemTapped(int index) {
     setState(() {
       _selectedIndex = index;
     });
   }
 
-  void _onAddButtonPressed() {
-    // Handle add button press
-  }
-
+  // Handle navigation between pages
   void _navigateToPage(int index) {
     switch (index) {
       case 0:
@@ -35,7 +80,9 @@ class _HomeScreenState extends State<HomeScreen> {
       case 3:
         Navigator.pushReplacement(
           context,
-          MaterialPageRoute(builder: (context) => InboxScreen()),
+          MaterialPageRoute(
+              builder: (context) =>
+                  InboxScreen()), // Assuming InboxScreen exists
         );
         break;
       case 4:
@@ -51,25 +98,7 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        leading: IconButton(
-          icon: const Icon(Icons.person, color: Colors.white),
-          onPressed: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => const ProfileScreen()),
-            );
-          },
-        ), // Replace leading with the profile icon
-        title: const Center(
-          child: Text(
-            'Soul Mate',
-            style: TextStyle(
-              fontSize: 20,
-              fontWeight: FontWeight.bold,
-              color: Colors.white,
-            ),
-          ),
-        ),
+        title: const Text('Soul Mate'),
         backgroundColor: Colors.red,
         actions: [
           IconButton(
@@ -84,29 +113,145 @@ class _HomeScreenState extends State<HomeScreen> {
         ],
       ),
       body: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Text(
-              'Welcome Back!',
-              style: Theme.of(context).textTheme.bodyLarge,
-            ),
-          ),
           Expanded(
-            child: PageView.builder(
-              itemCount: 4,
-              itemBuilder: (context, index) {
-                return _buildMatchCard(
-                  context: context,
-                  title: 'Featured Match ${index + 1}',
-                  subtitle: 'Brief info for match ${index + 1}',
-                  imageAsset: 'assets/images/match${index + 1}.jpg',
-                  isUserInFocus: index == 0,
-                );
-              },
-              controller: PageController(viewportFraction: 0.8),
-            ),
+            child: _isLoading
+                ? const Center(child: CircularProgressIndicator())
+                : _hasError
+                    ? const Center(
+                        child: Text(
+                          'Error fetching matches. Please try again later.',
+                          style: TextStyle(fontSize: 18.0),
+                        ),
+                      )
+                    : _matches.isNotEmpty
+                        ? Stack(
+                            children: [
+                              TCard(
+                                controller: _controller,
+                                size: Size(
+                                  MediaQuery.of(context).size.width,
+                                  MediaQuery.of(context).size.height * 0.75,
+                                ),
+                                cards: _matches.map((match) {
+                                  return Card(
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(20.0),
+                                    ),
+                                    elevation: 5.0,
+                                    child: Stack(
+                                      children: [
+                                        ClipRRect(
+                                          borderRadius:
+                                              BorderRadius.circular(20.0),
+                                          child: Image.network(
+                                            match['image'] as String,
+                                            fit: BoxFit.cover,
+                                            width: double.infinity,
+                                            height: double.infinity,
+                                            errorBuilder:
+                                                (context, error, stackTrace) {
+                                              return Image.network(
+                                                'https://via.placeholder.com/150',
+                                                fit: BoxFit.cover,
+                                                width: double.infinity,
+                                                height: double.infinity,
+                                              );
+                                            },
+                                          ),
+                                        ),
+                                        Positioned(
+                                          bottom: 0,
+                                          left: 0,
+                                          right: 0,
+                                          child: ClipRRect(
+                                            borderRadius:
+                                                const BorderRadius.only(
+                                              bottomLeft: Radius.circular(20.0),
+                                              bottomRight:
+                                                  Radius.circular(20.0),
+                                            ),
+                                            child: Container(
+                                              color:
+                                                  Colors.black.withOpacity(0.5),
+                                              padding:
+                                                  const EdgeInsets.all(16.0),
+                                              child: Text(
+                                                match['name'] as String,
+                                                style: const TextStyle(
+                                                  fontSize: 24.0,
+                                                  fontWeight: FontWeight.bold,
+                                                  color: Colors.white,
+                                                ),
+                                                textAlign: TextAlign.center,
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  );
+                                }).toList(),
+                                onForward: (index, info) {
+                                  print('Swiped forward on card index: $index');
+                                },
+                                onBack: (index, info) {
+                                  print('Swiped back on card index: $index');
+                                },
+                                onEnd: () {
+                                  print(
+                                      'You have reached the end of the cards.');
+                                },
+                              ),
+                            ],
+                          )
+                        : const Center(
+                            child: Text(
+                              'No matches found. Please try again later.',
+                              style: TextStyle(fontSize: 18.0),
+                            ),
+                          ),
+          ),
+          // Positioned icons below TCard
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              IconButton(
+                icon: const Icon(
+                  Icons.favorite_border,
+                  size: 60.0,
+                  color: Colors.red,
+                ),
+                onPressed: () {
+                  // Swipe left for rejection
+                  _controller.triggerLeft();
+                },
+              ),
+              const SizedBox(width: 30.0),
+              IconButton(
+                icon: const Icon(
+                  Icons.star,
+                  size: 60.0,
+                  color: Colors.orangeAccent,
+                ),
+                onPressed: () {
+                  // Swipe left for rejection
+                  _controller.triggerLeft();
+                },
+              ),
+              const SizedBox(width: 30.0),
+              IconButton(
+                icon: const Icon(
+                  Icons.favorite,
+                  size: 60.0,
+                  color: Colors.green,
+                ),
+                onPressed: () {
+                  // Swipe right for acceptance
+                  _controller.triggerRight();
+                },
+              ),
+            ],
           ),
         ],
       ),
@@ -116,117 +261,22 @@ class _HomeScreenState extends State<HomeScreen> {
           _onNavBarItemTapped(index);
           _navigateToPage(index);
         },
-        onAddButtonPressed: _onAddButtonPressed,
+        onAddButtonPressed: () {
+          // Handle add button action
+        },
       ),
     );
   }
+}
 
-  Widget _buildMatchCard({
-    required BuildContext context,
-    required String title,
-    required String subtitle,
-    required String imageAsset,
-    required bool isUserInFocus,
-  }) {
-    final size = MediaQuery.of(context).size;
-
-    return Container(
-      height: size.height * 0.7,
-      width: size.width * 0.9,
-      margin: const EdgeInsets.symmetric(horizontal: 8.0),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(10),
-        image: DecorationImage(
-          image: AssetImage(imageAsset),
-          fit: BoxFit.cover,
-        ),
-      ),
-      child: Container(
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(10),
-          boxShadow: const [
-            BoxShadow(color: Colors.black12, spreadRadius: 0.5),
-          ],
-          gradient: const LinearGradient(
-            colors: [Colors.black12, Colors.black87],
-            begin: Alignment.center,
-            stops: [0.4, 1],
-            end: Alignment.bottomCenter,
-          ),
-        ),
-        child: Stack(
-          children: [
-            Positioned(
-              right: 10,
-              left: 10,
-              bottom: 10,
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.end,
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  buildUserInfo(title: title, subtitle: subtitle),
-                  const Padding(
-                    padding: EdgeInsets.only(bottom: 16, right: 8),
-                    child: Icon(Icons.info, color: Colors.white),
-                  )
-                ],
-              ),
-            ),
-            if (isUserInFocus) buildLikeBadge(),
-          ],
-        ),
-      ),
-    );
+extension on TCardController {
+  void triggerLeft() {
+    // Add logic if needed
+    this.triggerLeft();
   }
 
-  Widget buildUserInfo({required String title, required String subtitle}) =>
-      Padding(
-        padding: const EdgeInsets.all(8),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Text(
-              title,
-              style: const TextStyle(
-                color: Colors.white,
-                fontWeight: FontWeight.bold,
-                fontSize: 21,
-              ),
-            ),
-            const SizedBox(height: 8),
-            Text(
-              subtitle,
-              style: const TextStyle(
-                color: Colors.white,
-                fontSize: 14,
-              ),
-            ),
-          ],
-        ),
-      );
-
-  Widget buildLikeBadge() {
-    return Positioned(
-      top: 20,
-      right: 20,
-      child: Transform.rotate(
-        angle: -0.5,
-        child: Container(
-          padding: const EdgeInsets.all(8.0),
-          decoration: BoxDecoration(
-            border: Border.all(color: Colors.green, width: 2),
-          ),
-          child: const Text(
-            'LIKE',
-            style: TextStyle(
-              color: Colors.green,
-              fontSize: 20,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-        ),
-      ),
-    );
+  void triggerRight() {
+    // Add logic if needed
+    this.triggerRight();
   }
 }
