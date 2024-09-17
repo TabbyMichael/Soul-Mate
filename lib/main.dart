@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:soul_mate/AUTH/login_page.dart';
-import 'package:soul_mate/splash_screen.dart';
+import 'package:soul_mate/DB%20Supabase/supabase_config.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
+import 'splash_screen.dart';
 import 'onboarding_screen.dart';
 import 'AUTH/signup_screen.dart';
+import 'AUTH/login_page.dart';
 import 'PROFILE/edit_profile_screen.dart';
 import 'home_screen.dart';
 import 'PROFILE/profile_screen.dart';
@@ -10,7 +12,15 @@ import 'search_screen.dart';
 import 'CHAT/chat_screen.dart';
 import 'settings_screen.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+
+  // Initialize Supabase
+  await Supabase.initialize(
+    url: SupabaseConfig.supabaseUrl,
+    anonKey: SupabaseConfig.supabaseKey,
+  );
+
   runApp(const MyApp());
 }
 
