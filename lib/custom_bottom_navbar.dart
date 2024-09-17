@@ -8,7 +8,8 @@ class BottomNavBar extends StatelessWidget {
   final ValueChanged<int> onItemTapped;
   final VoidCallback onAddButtonPressed;
 
-  BottomNavBar({
+  const BottomNavBar({
+    super.key,
     required this.selectedIndex,
     required this.onItemTapped,
     required this.onAddButtonPressed,
@@ -19,7 +20,7 @@ class BottomNavBar extends StatelessWidget {
       case 0:
         Navigator.pushReplacement(
           context,
-          MaterialPageRoute(builder: (context) => HomeScreen()),
+          MaterialPageRoute(builder: (context) => const HomeScreen()),
         );
         break;
       // case 1:
@@ -37,7 +38,7 @@ class BottomNavBar extends StatelessWidget {
       case 4:
         Navigator.pushReplacement(
           context,
-          MaterialPageRoute(builder: (context) => ProfileScreen()),
+          MaterialPageRoute(builder: (context) => const ProfileScreen()),
         );
         break;
     }
