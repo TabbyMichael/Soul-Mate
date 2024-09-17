@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:soul_mate/API/pexel_api.dart';
 import 'package:soul_mate/CHAT/chat_screen.dart';
-import 'package:soul_mate/API/random_api.dart'; // Ensure this is implemented correctly
 import 'package:soul_mate/PROFILE/profile_screen.dart';
 import 'package:soul_mate/custom_bottom_navbar.dart';
 import 'package:soul_mate/notifications_page.dart';
@@ -23,37 +23,36 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void initState() {
     super.initState();
-    _fetchProfiles();
+    _fetchImages();
   }
 
-  // Fetch profiles using the RandomUserService
-  Future<void> _fetchProfiles() async {
+  // Fetch images using the PexelsImageService
+  Future<void> _fetchImages() async {
     setState(() {
       _isLoading = true;
       _hasError = false;
     });
 
-    final apiService = RandomUserService();
+    final apiService = PexelsImageService();
     try {
-      // Fetch random users with a count of 100
-      final profiles = await apiService.fetchRandomUsers(count: 100);
+      // Fetch profile-like images
+      final images =
+          await apiService.fetchImages(query: 'portrait', count: 100);
 
       setState(() {
-        _matches = profiles.map((profile) {
-          final firstName = profile['name']?['first'] ?? 'Unknown';
-          final lastName = profile['name']?['last'] ?? 'User';
-          final imageUrl = profile['picture']?['large'] ??
-              'https://via.placeholder.com/150'; // Fallback image if picture is null
+        _matches = images.map((image) {
+          final imageUrl = image['src']['medium'] ??
+              'https://via.placeholder.com/150'; // Fallback image if URL is null
 
           return {
-            'name': '$firstName $lastName',
+            'name': 'User ${_matches.length + 1}', // Generate placeholder names
             'image': imageUrl,
           };
         }).toList();
         _isLoading = false;
       });
     } catch (e) {
-      print('Error fetching profiles: $e');
+      print('Error fetching images: $e');
       setState(() {
         _hasError = true;
         _isLoading = false;
@@ -120,7 +119,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 : _hasError
                     ? const Center(
                         child: Text(
-                          'Error fetching matches. Please try again later.',
+                          'Error fetching images. Please try again later.',
                           style: TextStyle(fontSize: 18.0),
                         ),
                       )
@@ -207,51 +206,10 @@ class _HomeScreenState extends State<HomeScreen> {
                           )
                         : const Center(
                             child: Text(
-                              'No matches found. Please try again later.',
+                              'No images found. Please try again later.',
                               style: TextStyle(fontSize: 18.0),
                             ),
                           ),
-          ),
-          // Positioned icons below TCard
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              IconButton(
-                icon: const Icon(
-                  Icons.favorite_border,
-                  size: 60.0,
-                  color: Colors.red,
-                ),
-                onPressed: () {
-                  // Swipe left for rejection
-                  _controller.triggerLeft();
-                },
-              ),
-              const SizedBox(width: 30.0),
-              IconButton(
-                icon: const Icon(
-                  Icons.star,
-                  size: 60.0,
-                  color: Colors.orangeAccent,
-                ),
-                onPressed: () {
-                  // Swipe left for rejection
-                  _controller.triggerLeft();
-                },
-              ),
-              const SizedBox(width: 30.0),
-              IconButton(
-                icon: const Icon(
-                  Icons.favorite,
-                  size: 60.0,
-                  color: Colors.green,
-                ),
-                onPressed: () {
-                  // Swipe right for acceptance
-                  _controller.triggerRight();
-                },
-              ),
-            ],
           ),
         ],
       ),
@@ -266,17 +224,5 @@ class _HomeScreenState extends State<HomeScreen> {
         },
       ),
     );
-  }
-}
-
-extension on TCardController {
-  void triggerLeft() {
-    // Add logic if needed
-    this.triggerLeft();
-  }
-
-  void triggerRight() {
-    // Add logic if needed
-    this.triggerRight();
   }
 }

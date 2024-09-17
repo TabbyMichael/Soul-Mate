@@ -65,7 +65,7 @@ class _SplashScreenState extends State<SplashScreen>
     });
 
     // Delay to simulate loading process
-    SchedulerBinding.instance?.addPostFrameCallback((_) {
+    SchedulerBinding.instance.addPostFrameCallback((_) {
       Future.delayed(const Duration(seconds: 7), () {
         Navigator.pushReplacementNamed(context, '/OnboardingScreen');
       });
