@@ -105,7 +105,8 @@ class _HomeScreenState extends State<HomeScreen> {
             onPressed: () {
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => NotificationsPage()),
+                MaterialPageRoute(
+                    builder: (context) => const NotificationsPage()),
               );
             },
           ),
@@ -130,7 +131,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                 controller: _controller,
                                 size: Size(
                                   MediaQuery.of(context).size.width,
-                                  MediaQuery.of(context).size.height * 0.75,
+                                  MediaQuery.of(context).size.height * 0.81,
                                 ),
                                 cards: _matches.map((match) {
                                   return Card(
