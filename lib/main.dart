@@ -1,3 +1,4 @@
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:soul_mate/DB%20Supabase/supabase_config.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -14,6 +15,9 @@ import 'settings_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  // Initialize Firebase
+  await Firebase.initializeApp();
 
   // Initialize Supabase
   await Supabase.initialize(
