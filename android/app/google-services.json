@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "799102631889",
+    "project_id": "soul-mate-1ce05",
+    "storage_bucket": "soul-mate-1ce05.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:799102631889:android:cb0eff0f266715be4c2af0",
+        "android_client_info": {
+          "package_name": "com.example.soul_mate"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDvQJ_B19u4-b1ISwGM-mjhCDLT5Z6rRMU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
